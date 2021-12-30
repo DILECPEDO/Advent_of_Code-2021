@@ -21,13 +21,13 @@ impl Board {
 }
 
 impl Board {
-    fn from_string(vec: Vec<String>) -> Board {
-        let data: Vec<Vec<i64>> = vec
+    fn from_string(vec: &Vec<String>) -> Board {
+        let data: Vec<Vec<Cell>> = vec
             .iter()
             .map(|c| {
                 c.split(',')
-                    .map(|s| s.parse::<i64>().unwrap())
-                    .collect::<Vec<i64>>()
+                    .map(|s| Cell::from(s.parse::<i64>().unwrap()))
+                    .collect::<Vec<Cell>>()
             })
             .collect();
 
@@ -40,6 +40,14 @@ struct Cell {
     marked: bool,
 }
 
+impl Cell {
+    fn from(i: i64) -> Cell {
+        Cell {
+            number: i,
+            marked: false,
+        }
+    }
+}
 fn get_data_from_file(input_file: &str) -> (Vec<i64>, Vec<Board>) {
     let mut lines = read_lines(input_file).unwrap();
     let numbers = lines.next().unwrap().unwrap();
@@ -54,11 +62,13 @@ fn get_data_from_file(input_file: &str) -> (Vec<i64>, Vec<Board>) {
         .map(|s| s.unwrap().replace("  ", " ").trim().to_string())
         .filter(|line| !(line == ""))
         .collect();
-    let board_bodys: Vec<Vec<String>> = lines.chunks(5).map(|s| s.into()).collect();
-    // let boards = board_bodys.iter().map(|v| )
+    let board_bodies: Vec<Vec<String>> = lines.chunks(5).map(|s| s.into()).collect();
+    let boards = board_bodies
+        .iter()
+        .map(|v| Board::from_string(v))
+        .collect::<Vec<Board>>();
 
-    println!("{:?}", board_bodys);
-    todo!();
+    (numbers, boards)
 }
 fn main() {
     get_data_from_file("input.txt");
